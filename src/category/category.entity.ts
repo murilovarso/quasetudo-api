@@ -5,9 +5,9 @@ export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ length: 250, nullable: false })
+  @Column({ length: 250, nullable: true })
   name: string
 
-  @Column({ length: 250, nullable: false })
+  @Column({ length: 250, nullable: true })
   slug: string
 }

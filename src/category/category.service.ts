@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Category } from './category.entity'
 import { Repository } from 'typeorm'
-import { identity } from 'rxjs'
 
 @Injectable()
 export class CategoryService {
@@ -14,9 +13,10 @@ export class CategoryService {
     return this.categoryRepository.find()
   }
   async findById(id: string): Promise<Category> {
-    return this.categoryRepository.findOne(id)
+    return this.categoryRepository.findOne({
+        where: { id },
+  })
   }
-
   async create(input: Category): Promise<Category> {
     return this.categoryRepository.save(input)
   }
@@ -38,3 +38,7 @@ export class CategoryService {
     }
   }
 }
+function id(id: any): Category | PromiseLike<Category> {
+    throw new Error('Function not implemented.')
+}
+
