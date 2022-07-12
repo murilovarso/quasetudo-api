@@ -17,6 +17,10 @@ export class CategoryService {
         where: { id },
   })
   }
+  async findBySlug(slug: string): Promise<Category>{
+    return this.categoryRepository.findOne( { slug })
+  }
+
   async create(input: Category): Promise<Category> {
     return this.categoryRepository.save(input)
   }
@@ -38,7 +42,3 @@ export class CategoryService {
     }
   }
 }
-function id(id: any): Category | PromiseLike<Category> {
-    throw new Error('Function not implemented.')
-}
-

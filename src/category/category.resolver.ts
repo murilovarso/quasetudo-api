@@ -2,7 +2,6 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { CategoryPublic } from './dto/category'
 import { CategoryService } from './category.service'
 import { CategoryCreateInput } from './dto/category-create.input'
-import { Category } from './category.entity'
 import { CategoryMapper } from './category.mapper'
 import { CategoryUpdateInput } from './dto/category-update.input'
 
@@ -18,6 +17,11 @@ export class CategoryResolver {
  @Query(returns => CategoryPublic, { name: 'getCategoryById' })
   async getCategoryById(@Args('id') id: string): Promise<CategoryPublic> {
     return await this.categoryService.findById(id)
+  }
+ 
+  @Query(returns => CategoryPublic, { name: 'getCategoryBySlug' })
+  async getCategoryBySlug(@Args('slug') slug: string): Promise<CategoryPublic> {
+    return await this.categoryService.findBySlug(slug)
   }
 
   @Mutation(returns => CategoryPublic, { name: 'createCategory' })
