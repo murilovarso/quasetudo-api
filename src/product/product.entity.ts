@@ -15,7 +15,6 @@ export class Product {
   @Column({ length: 250, nullable: false })
   slug: string
 
-  // Product N -> 1 Category
   @ManyToOne(
     type => Category,
     category => category.id

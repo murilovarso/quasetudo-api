@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ProductModule } from './product/product.module'
+import { BrandModule } from './brand/brand.module'
 
 
 @Module({
@@ -30,6 +31,7 @@ import { ProductModule } from './product/product.module'
     }),
     CategoryModule,
     ProductModule,
+    BrandModule,
   ],
   controllers: [AppController],
   providers: [AppService],
