@@ -5,12 +5,12 @@ export class Brand {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ length: 250, nullable: false })
+  @Column({ length: 250, nullable: true })
   name: string
 
-  @Column({ length: 250, nullable: false })
+  @Column({ length: 250, nullable: true })
   slug: string
 
-  @Column({ length: 450, nullable: false })
+  @Column({ length: 450, nullable: true })
   logo: string
 }

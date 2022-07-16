@@ -6,8 +6,8 @@ export class S3{
     constructor(){
         aws.config.update({
             region: 'us-east-1',
-           // accessKeyId: 'AKIAZVLJAHM76TDRFO7G',
-           // secretAccessKey: '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'
+           accessKeyId: 'AKIAZVLJAHM76TDRFO7G',
+           secretAccessKey: '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'
         })
     }
 
