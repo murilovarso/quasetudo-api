@@ -1,3 +1,4 @@
+
 import { Field, InputType } from '@nestjs/graphql'
 import { IsUUID, Length, Matches, Validate } from 'class-validator'
 import { BrandSlugIsUnique } from '../validations/BrandSlugIsUnique'

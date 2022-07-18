@@ -10,9 +10,8 @@ export class ProductService {
     private productRepository: Repository<Product>
   ) {}
   async findById(id: string): Promise<Product> {
-    return this.productRepository.findOne(id, {loadRelationIds: true} )
-  }                                     
-  
+    return this.productRepository.findOne(id, { loadRelationIds: true })
+  }
   async findBySlug(slug: string): Promise<Product>{
     return this.productRepository.findOne({ where: [{ slug }]})
   }

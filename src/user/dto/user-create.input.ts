@@ -1,6 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { Length, Matches, Validate } from 'class-validator'
+import { Length, Validate } from 'class-validator'
 import { UserEmailIsUnique } from '../validations/UserEmailIsUnique'
+
 @InputType()
 export class UserCreateInput {
   @Field()

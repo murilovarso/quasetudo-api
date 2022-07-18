@@ -11,6 +11,6 @@ export class Brand {
   @Column({ length: 250, nullable: true })
   slug: string
 
-  @Column({ length: 450, nullable: true })
+  @Column({ length: 10000, nullable: true })
   logo: string
 }

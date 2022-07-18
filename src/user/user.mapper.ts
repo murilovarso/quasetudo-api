@@ -11,15 +11,12 @@ export class UserMapper {
     entity.passwd = input.passwd
     return entity
   }
-
   public static toUpdateEntity(input: UserUpdateInput): User {
     const entity = new User()
     entity.id = input.id
     entity.name = input.name
     entity.email = input.email
     entity.role = input.role
-    entity.passwd = input.passwd
     return entity
   }
-  
 }

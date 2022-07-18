@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Context,
+  GraphQLExecutionContext
+} from '@nestjs/graphql'
 import { UserPublic } from './dto/user'
 import { UserService } from './user.service'
 import { UserCreateInput } from './dto/user-create.input'
@@ -9,84 +16,117 @@ import { JwtService } from '@nestjs/jwt'
 import { AuthUserInput } from './dto/auth-user.input'
 import { UseGuards } from '@nestjs/common'
 import { AuthGuard } from 'src/utils/jwt-auth.guard'
-import { AuthUserId } from 'src/utils/jwt-user.decorations'
+import { AuthUserId } from 'src/utils/jwt-user.decorator'
+import { UserPassUpdateInput } from './dto/user-pass-update.input'
 
 @Resolver(of => UserPublic)
 export class UserResolver {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService : JwtService
-    ) {}
+    private readonly jwtService: JwtService
+  ) {}
 
-  @Query(returns => [UserPublic], { name: 'getAllUsers' })
+  @UseGuards(AuthGuard)
+  @Query(returns => [UserPublic], { name: 'panelGetAllUsers' })
   async getAllUsers(): Promise<UserPublic[]> {
     return await this.userService.findAll()
   }
 
- @Query(returns => UserPublic, { name: 'getUserById' })
+  @UseGuards(AuthGuard)
+  @Query(returns => UserPublic, { name: 'panelGetUserById' })
   async getUserById(@Args('id') id: string): Promise<UserPublic> {
     return await this.userService.findById(id)
   }
- 
-  @Mutation(returns => UserPublic, { name: 'createUser' })
-  async createUser(
-    @Args('input') input: UserCreateInput
-  ): Promise<UserPublic> {
+
+  @UseGuards(AuthGuard)
+  @Query(returns => UserPublic, { name: 'panelGetUserByEmail' })
+  async getUserByEmail(@Args('email') email: string): Promise<UserPublic> {
+    return await this.userService.findByEmail(email)
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(returns => UserPublic, { name: 'panelCreateUser' })
+  async createUser(@Args('input') input: UserCreateInput): Promise<UserPublic> {
     return this.userService.create(UserMapper.toEntity(input))
   }
 
- @Mutation(returns => UserPublic, { name: 'updateUser' })
-  async updateUser(
-    @Args('input') input: UserUpdateInput
-  ): Promise<UserPublic> {
+  @UseGuards(AuthGuard)
+  @Mutation(returns => UserPublic, { name: 'panelUpdateUser' })
+  async updateUser(@Args('input') input: UserUpdateInput): Promise<UserPublic> {
     return this.userService.update(UserMapper.toUpdateEntity(input))
   }
 
-  @Mutation(returns => Boolean, { name: 'deleteUser' })
+  @UseGuards(AuthGuard)
+  @Mutation(returns => Boolean, { name: 'panelChangeUserPass' })
+  async changeUserPass(
+    @Args('input') input: UserPassUpdateInput
+  ): Promise<boolean> {
+    return this.userService.changePassword(input.id, input.passwd)
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(returns => Boolean, { name: 'panelDeleteUser' })
   async deleteUser(@Args('id') input: string): Promise<boolean> {
     return this.userService.delete(input)
   }
-  @Mutation(returns => AuthToken, { name: 'auth' })
-  async auth(@Args('input') input: AuthUserInput): Promise<AuthToken> {
-   const [user, refreshToken]  = await this.userService.auth(input.email, input.passwd)
-   if(user){
-    const authToken = new AuthToken()
-    authToken.refreshToken = this.jwtService.sign({
-      scope: ['refreshToken'],
-      id: refreshToken.id
-    },{
-      expiresIn: '8 hours'
-    })
-    authToken.accessToken = this.jwtService.sign({
-      scope: ['accesshToken', user.role],
-      id: user.id
-    },{
-      expiresIn:  '1 hour'
-    })
-    return authToken
-  }
-  return null
-}
 
-@Mutation(returns => String, { name: 'accessToken' })
-async accessToken(@Args('refreshToken') refreshToken: string): Promise<string> {
-  const decoded = this.jwtService.verify(refreshToken)
-  if(decoded && decoded.scope.indexOf('refreshToken') >= 0){
-    const authToken = await this.userService.getRefreshToken(decoded.id)
-    const accessToken = this.jwtService.sign(
-      {
-        scope: ['accessToken', authToken.user.role],
-        id: authToken.user.id
-      },{
-        expiresIn:  '1 hour'
-      })
+  @Mutation(returns => AuthToken, { name: 'auth' })
+  async auth(
+    @Args('input') input: AuthUserInput
+  ): Promise<AuthToken> {
+    const [user, refreshToken] = await this.userService.auth(
+      input.email,
+      input.passwd
+    )
+    if (user) {
+      const authToken = new AuthToken()
+      authToken.refreshToken = this.jwtService.sign(
+        {
+          scope: ['refreshToken'],
+          id: refreshToken.id
+        },
+        {
+          expiresIn: '8 hours'
+        }
+      )
+      authToken.accessToken = this.jwtService.sign(
+        {
+          scope: ['accessToken', user.role],
+          id: user.id
+        },
+        {
+          expiresIn: '1 hour'
+        }
+      )
+      return authToken
+    }
+    throw new Error('Bad credentials')
+  }
+
+  @Mutation(returns => String, { name: 'accessToken' })
+  async accessToken(
+    @Args('refreshToken') refreshToken: string
+  ): Promise<string> {
+    const decoded = this.jwtService.verify(refreshToken)
+    if (decoded && decoded.scope.indexOf('refreshToken') >= 0) {
+      const authToken = await this.userService.getRefreshToken(decoded.id)
+      const accessToken = this.jwtService.sign(
+        {
+          scope: ['accessToken', authToken.user.role],
+          id: authToken.user.id
+        },
+        {
+          expiresIn: '1 hour'
+        }
+      )
       return accessToken
     }
-return null
-}
-@UseGuards(AuthGuard)
-@Query(returns => UserPublic, { name: 'getMe' })
-async getMe(@AuthUserId() id: string): Promise<UserPublic> {
-  return await this.userService.findById(id)
-}
+    return null
+  }
+
+  @UseGuards(AuthGuard)
+  @Query(returns => UserPublic, { name: 'panelGetMe' })
+  async getMe(@AuthUserId() id: string): Promise<UserPublic> {
+    return await this.userService.findById(id)
+  }
 }

@@ -16,32 +16,33 @@ export class UserService {
     return this.userRepository.find()
   }
   async findById(id: string): Promise<User> {
-    return this.userRepository.findOne({
-        where: { id },
-  })
+    return this.userRepository.findOne(id)
   }
-  async findByEmail(email: string): Promise<User>{
-    return this.userRepository.findOne({ where: [{ email: email }]})
+  async findByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({ where: [{ email: email }] })
   }
 
   async create(input: User): Promise<User> {
     return this.userRepository.save(input)
   }
 
-  async auth(email: string, passwd: string): Promise<[User, AuthToken]>{
-    const user = await this.userRepository.findOne({where: {email}})
-    if(user &&  (await user.checkPassword(passwd))){
+  async auth(
+    email: string,
+    passwd: string,
+  ): Promise<[User, AuthToken]> {
+    const user = await this.userRepository.findOne({ where: { email } })
+    if (user && (await user.checkPassword(passwd))) {
       const authToken = new AuthToken()
       authToken.user = user
       const token = await this.authTokenRepository.save(authToken)
       return [user, token]
     }
-      return null
-    }
-    async getRefreshToken(id: string): Promise<AuthToken>{
-       return this.authTokenRepository.findOne(id, {relations: ['user']})
+    return [null, null]
+  }
 
-      }
+  async getRefreshToken(id: string): Promise<AuthToken> {
+   return this.authTokenRepository.findOne(id,{ relations: ['user']})
+  }
 
   async update(input: User): Promise<User> {
     const entity = await this.userRepository.findOne(input.id)
@@ -49,9 +50,15 @@ export class UserService {
     entity.email = input.email
     entity.passwd = input.passwd
     entity.role = input.role
-
     await this.userRepository.save(entity)
     return input
+  }
+
+  async changePassword(id: string, newPasswd: string): Promise<boolean> {
+    const entity = await this.userRepository.findOne(id)
+    entity.passwd = newPasswd
+    await this.userRepository.save(entity)
+    return true
   }
 
   async delete(id: string): Promise<boolean> {

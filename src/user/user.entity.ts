@@ -1,24 +1,30 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import { AuthToken } from './authtoken.entity'
-
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ length: 250, nullable: true })
+  @Column({ length: 250, nullable: false })
   name: string
 
-  @Column({ length: 450, nullable: true })
+  @Column({ length: 450, nullable: false })
   email: string
 
-  @Column({ length: 450, nullable: true })
+  @Column({ length: 450, nullable: false })
   passwd: string
 
-  @Column({ length: 450, nullable: true })
-  role: string
+  @Column({ length: 450, nullable: false })
+  role: string // root, user
 
   @Column({ type: 'timestamp', nullable: true })
   lastLogin: Date
@@ -54,8 +60,7 @@ export class User {
     this.updatedAt = new Date()
   }
 
-  async checkPassword(passwd: string): Promise<boolean>{
-    console.log(this.passwd, passwd)
+  async checkPassword(passwd: string): Promise<boolean> {
     return bcrypt.compare(passwd, this.passwd)
   }
 }

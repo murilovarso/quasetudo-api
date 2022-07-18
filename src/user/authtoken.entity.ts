@@ -1,7 +1,14 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import { User } from './user.entity'
-
 
 @Entity()
 export class AuthToken {
@@ -14,11 +21,9 @@ export class AuthToken {
   )
   user: User
 
-
- 
   @Column({ type: 'timestamp' })
   createdAt: Date
-
+  
   @BeforeInsert()
   setCreatedDate(): void {
     this.createdAt = new Date()

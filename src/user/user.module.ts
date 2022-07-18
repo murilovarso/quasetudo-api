@@ -8,21 +8,19 @@ import { JwtModule } from '@nestjs/jwt'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AuthToken } from './authtoken.entity'
 
-
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true}),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forFeature([User, AuthToken]),
-    JwtModule.registerAsync(
-    { 
+    JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-      secret: configService.get('JWT_SECRET')
+        secret: configService.get('JWT_SECRET')
+      })
     })
-   
-  })
-],
+  ],
   providers: [UserService, UserResolver, UserEmailIsUnique]
 })
 export class UserModule {}
+console.log('token', process.env.JWT_SECRET)

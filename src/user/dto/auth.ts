@@ -7,4 +7,5 @@ export class AuthToken {
 
   @Field({ nullable: false })
   accessToken: string
+
 }
