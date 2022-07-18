@@ -22,7 +22,6 @@ export class ProductResolver {
       await this.productService.findById(id)
     )
   }
-
   @Query(returns => ProductPublic, { name: 'getProductBySlug' })
   async getProductBySlug(@Args('slug') slug: string): Promise<ProductPublic> {
     return ProductMapper.fromEntityToPublic(

@@ -15,6 +15,16 @@ export class ProductMapper {
     category.id = input.category
     entity.category = category
 
+    entity.sku = input.sku
+    entity.price = input.price
+    entity.weight = input.weight
+
+    entity.optionNames = ['cor','tamanho']
+
+   entity.variations = [
+    {optionName1: 'vermelho', optionName2: 'P', sku:'a' , price: 10, weight: 5}
+   ]
+
     return entity
   }
   public static fromUpdateToEntity(input: ProductUpdateInput): Product {
@@ -27,12 +37,8 @@ export class ProductMapper {
     const category = new Category()
     category.id = input.category
     entity.category = category
-    entity.optionNames= ['cor', 'tamanho']
 
-    entity.variations = [
-      { optionName1:'vermelho', optionName2: 'P', sku: 'a', price: 10, weight: 20},
-      { optionName1:'azul', optionName2: 'P', sku: 'a', price: 10, weight: 20}
-    ]
+    
     return entity
   }
   public static fromEntityToPublic(entity: Product): ProductPublic {
@@ -42,6 +48,7 @@ export class ProductMapper {
     product.slug = entity.slug
     product.description = entity.description
     product.category = entity.category.toString()
+    
     return product
   }
 }

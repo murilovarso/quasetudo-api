@@ -11,7 +11,6 @@ import { BrandModule } from './brand/brand.module'
 import { UserModule } from './user/user.module'
 import { CoreModule } from './core/core.module'
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true}),
