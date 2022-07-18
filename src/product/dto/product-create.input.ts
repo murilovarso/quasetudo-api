@@ -23,12 +23,12 @@ export class ProductCreateInput {
   @IsUUID()
   category: string
 
-  @Field({defaultValue: true})
+  @Field({nullable: true})
   sku: string
 
-  @Field(type => Float, {defaultValue: true})
+  @Field(type => Float, {nullable: true})
   price: number
 
-  @Field(type => Float, {defaultValue: true})
+  @Field(type => Float, {nullable: true})
   weight: number
 }
