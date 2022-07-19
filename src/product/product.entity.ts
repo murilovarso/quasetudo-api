@@ -34,7 +34,6 @@ export class Product {
   @Column({ nullable: true, type: 'integer' })
   stock: number
 
-  // Product N -> 1 Category
   @ManyToOne(
     type => Category,
     category => category.id
