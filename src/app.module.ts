@@ -27,10 +27,9 @@ import { CoreModule } from './core/core.module'
   }),
   CoreModule,
   
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: 'schema.gql',
-    }),
+  GraphQLModule.forRoot({
+    autoSchemaFile: 'schema.gql'
+  }),
     CategoryModule,
     ProductModule,
     BrandModule,

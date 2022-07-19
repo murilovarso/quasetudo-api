@@ -8,12 +8,25 @@ type Category {
   slug: String
 }
 
+type Variation {
+  optionName1: String!
+  optionName2: String!
+  sku: String!
+  price: Float!
+  weight: Float!
+  stock: Int!
+}
+
 type Product {
   id: String
   name: String
   slug: String
   description: String
   category: String
+  price: Float
+  images: [String!]
+  optionNames: [String!]
+  variations: [Variation!]
 }
 
 type Brand {
@@ -40,6 +53,8 @@ type Query {
   getCategoryById(id: String!): Category!
   getCategoryBySlug(slug: String!): Category!
   getAllProducts: [Product!]!
+  getAllProductsByCategory(categorySlug: String!): [Product!]!
+  getAllProductsByBrand(brandSlug: String!): [Product!]!
   getProductById(id: String!): Product!
   getProductBySlug(slug: String!): Product!
   getAllBrands: [Brand!]!
@@ -58,8 +73,10 @@ type Mutation {
   panelCreateProduct(input: ProductCreateInput!): Product!
   panelUpdateProduct(input: ProductUpdateInput!): Product!
   panelDeleteProduct(id: String!): Boolean!
+  panelUploadProductImage(file: Upload!, id: String!): Boolean!
+  panelDeleteProductImage(url: String!, id: String!): Boolean!
   panelCreateBrand(input: BrandCreateInput!): Brand!
-  panelUploadBrandLogo(id: String!, file: Upload!): Boolean!
+  panelUploadBrandLogo(file: Upload!, id: String!): Boolean!
   panelRemoveBrandLogo(id: String!): Boolean!
   panelUpdateBrand(input: BrandUpdateInput!): Brand!
   panelDeleteBrand(id: String!): Boolean!
@@ -90,6 +107,18 @@ input ProductCreateInput {
   sku: String
   price: Float
   weight: Float
+  stock: Int!
+  optionNames: [String!]
+  variations: [VariationInput!]
+}
+
+input VariationInput {
+  optionName1: String!
+  optionName2: String!
+  sku: String!
+  price: Float!
+  weight: Float!
+  stock: Int!
 }
 
 input ProductUpdateInput {
@@ -100,13 +129,13 @@ input ProductUpdateInput {
   category: String!
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
 input BrandCreateInput {
   name: String!
   slug: String!
 }
-
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
 
 input BrandUpdateInput {
   id: String!

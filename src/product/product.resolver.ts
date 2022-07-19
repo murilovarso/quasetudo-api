@@ -6,6 +6,8 @@ import { ProductMapper } from './product.mapper'
 import { ProductUpdateInput } from './dto/product-update.input'
 import { UseGuards } from '@nestjs/common'
 import { AuthGuard } from 'src/utils/jwt-auth.guard'
+import { GraphQLUpload } from 'apollo-server-express'
+import { FileUpload } from 'graphql-upload'
 
 @Resolver(of => ProductPublic)
 export class ProductResolver {
@@ -16,12 +18,29 @@ export class ProductResolver {
     const products = await this.productService.findAll()
     return products.map(ProductMapper.fromEntityToPublic)
   }
+
+  @Query(returns => [ProductPublic], { name: 'getAllProductsByCategory' })
+  async getAllProductsByCategory(
+    @Args('categorySlug') categorySlug: string
+  ): Promise<ProductPublic[]> {
+    const products = await this.productService.findAllByCategory(categorySlug)
+    return products.map(ProductMapper.fromEntityToPublic)
+  }
+  @Query(returns => [ProductPublic], { name: 'getAllProductsByBrand' })
+  async getAllProductsByBrand(
+    @Args('brandSlug') brandSlug: string
+  ): Promise<ProductPublic[]> {
+    const products = await this.productService.findAllByBrand(brandSlug)
+    return products.map(ProductMapper.fromEntityToPublic)
+  }
+
   @Query(returns => ProductPublic, { name: 'getProductById' })
   async getProductById(@Args('id') id: string): Promise<ProductPublic> {
     return ProductMapper.fromEntityToPublic(
       await this.productService.findById(id)
     )
   }
+
   @Query(returns => ProductPublic, { name: 'getProductBySlug' })
   async getProductBySlug(@Args('slug') slug: string): Promise<ProductPublic> {
     return ProductMapper.fromEntityToPublic(
@@ -53,5 +72,29 @@ export class ProductResolver {
   @Mutation(returns => Boolean, { name: 'panelDeleteProduct' })
   async deleteProduct(@Args('id') input: string): Promise<boolean> {
     return this.productService.delete(input)
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(returns => Boolean, { name: 'panelUploadProductImage' })
+  async uploadProductImage(
+    @Args('id') id: string,
+    @Args('file', { type: () => GraphQLUpload })
+    file: FileUpload
+  ): Promise<boolean> {
+    const { createReadStream, filename, mimetype } = await file
+    return await this.productService.uploadImage(
+      id,
+      createReadStream,
+      filename,
+      mimetype
+    )
+  }
+  @UseGuards(AuthGuard)
+  @Mutation(returns => Boolean, { name: 'panelDeleteProductImage' })
+  async deleteProductImage(
+    @Args('id') id: string,
+    @Args('url') url: string
+  ): Promise<boolean> {
+    return this.productService.deleteImage(id, url)
   }
 }
